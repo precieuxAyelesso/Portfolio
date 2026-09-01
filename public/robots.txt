@@ -1,0 +1,34 @@
+# robots.txt for portfolio - optimization for standard search engines and AI agents
+
+User-agent: *
+Allow: /
+
+# Explicit rules for AI scrapers and crawlers to allow indexing for AI search
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Omgilibot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
+
+Sitemap: https://portfolio-admin-precieux.vercel.app/sitemap.xml
