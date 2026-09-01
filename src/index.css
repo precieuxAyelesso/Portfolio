@@ -146,6 +146,53 @@ body {
   width: 80%;
 }
 
+/* ─── AURA ORBS ─── */
+@keyframes float-slow-1 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(60px, -50px) scale(1.1);
+  }
+  66% {
+    transform: translate(-40px, 40px) scale(0.92);
+  }
+}
+
+@keyframes float-slow-2 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  33% {
+    transform: translate(-70px, 60px) scale(0.9);
+  }
+  66% {
+    transform: translate(50px, -30px) scale(1.12);
+  }
+}
+
+@keyframes float-slow-3 {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(40px, 70px) scale(1.08);
+  }
+}
+
+.aura-orb-1 {
+  animation: float-slow-1 18s ease-in-out infinite;
+}
+
+.aura-orb-2 {
+  animation: float-slow-2 22s ease-in-out infinite;
+}
+
+.aura-orb-3 {
+  animation: float-slow-3 26s ease-in-out infinite;
+}
+
+
 /* ─── COVERFLOW 3D ─── */
 .coverflow-viewport {
   perspective: 1200px;

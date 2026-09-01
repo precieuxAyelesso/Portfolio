@@ -76,3 +76,6 @@ export function Toast({ message, visible }: { message: string; visible: boolean 
     </div>
   );
 }
+
+export { AuraBackground } from './AuraBackground';
+
