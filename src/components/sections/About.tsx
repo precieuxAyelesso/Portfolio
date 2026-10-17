@@ -1,67 +1,71 @@
 import { useTranslation } from 'react-i18next';
-import { AnimatedSection } from '../ui';
+import { motion, useScroll, useSpring, useTransform, useVelocity } from 'framer-motion';
+import { Counter, FadeIn, LineDraw, ScrollWords } from '../ui';
+import { projects } from '../../data';
+
+/* ─── Big scrolling band that skews with scroll velocity ─── */
+export function Marquee() {
+  const { t } = useTranslation();
+  const { scrollY } = useScroll();
+  const velocity = useSpring(useVelocity(scrollY), { damping: 50, stiffness: 300 });
+  const skew = useTransform(velocity, [-2000, 2000], [8, -8], { clamp: true });
+  const items = ['marquee-1', 'marquee-2', 'marquee-3', 'marquee-4', 'marquee-5'];
+  const row = (
+    <div className="flex shrink-0 items-center">
+      {items.map(k => (
+        <span key={k} className="flex items-center">
+          <span className="px-[2vw] text-[clamp(3rem,9vw,8rem)] font-medium tracking-[-0.05em] leading-none">{t(k)}</span>
+          <span className="serif text-[clamp(2.5rem,7vw,6rem)] text-[var(--accent)] leading-none">✳</span>
+        </span>
+      ))}
+    </div>
+  );
+  return (
+    <section aria-hidden className="py-14 sm:py-24 overflow-hidden border-y hairline">
+      <motion.div style={{ skewX: skew }}>
+        <div className="marquee" style={{ ['--marquee-speed' as string]: '35s' }}>
+          {row}{row}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
 
 export function About() {
   const { t } = useTranslation();
-  const points = ['about-li1', 'about-li2', 'about-li3', 'about-li4'];
+  const stats = [
+    { to: projects.length, suffix: '', key: 'about-stat1' },
+    { to: 50, suffix: '+', key: 'about-stat2' },
+    { to: 15, suffix: '+', key: 'about-stat3' },
+  ];
 
   return (
-    <AnimatedSection id="about" className="py-16 sm:py-24 section-divider">
-      <div className="max-w-6xl mx-auto px-5">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-10 md:gap-14 items-center">
+    <section id="about" className="py-24 sm:py-40">
+      <div className="container-x grid grid-cols-1 md:grid-cols-12 gap-10">
+        <div className="md:col-span-3">
+          <FadeIn><p className="label md:sticky md:top-28">{t('about-label')}</p></FadeIn>
+        </div>
+        <div className="md:col-span-9">
+          <ScrollWords
+            text={t('about-statement')}
+            className="text-[clamp(1.6rem,3.6vw,3.3rem)] leading-[1.12] tracking-[-0.03em] font-medium"
+          />
 
-          {/* Left: Profile image */}
-          <div className="md:col-span-5">
-            <div className="relative">
-              {/* Decorative border glow */}
-              <div className="absolute -inset-1 bg-gradient-to-br from-cyan-500/20 to-transparent rounded-2xl blur-sm" />
-              <div className="relative overflow-hidden rounded-2xl border border-slate-700/50">
-                <img
-                  src="/profil_1.jpg"
-                  alt="AYELESSO Précieux"
-                  className="w-full h-auto object-cover aspect-[4/5]"
-                />
-                {/* Subtle overlay gradient */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/40 to-transparent" />
+          <div className="mt-20 sm:mt-28 grid grid-cols-3 gap-4 sm:gap-10">
+            {stats.map((s, i) => (
+              <div key={s.key}>
+                <LineDraw delay={i * 0.12} />
+                <FadeIn delay={0.2 + i * 0.12}>
+                  <p className="mt-5 text-[clamp(2.5rem,7vw,6rem)] font-medium tracking-[-0.05em] leading-none tabular-nums">
+                    <Counter to={s.to} suffix={s.suffix} />
+                  </p>
+                  <p className="label mt-3">{t(s.key)}</p>
+                </FadeIn>
               </div>
-              {/* Floating badge */}
-              <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full glass text-xs font-mono text-cyan-400 border border-cyan-500/30 whitespace-nowrap">
-                Porto-Novo, Bénin 🇧🇯
-              </div>
-            </div>
+            ))}
           </div>
-
-          {/* Right: Text content */}
-          <div className="md:col-span-7 space-y-6">
-            {/* Header */}
-            <div>
-              <span className="text-xs font-mono font-semibold tracking-[0.2em] uppercase text-cyan-400 opacity-80">
-                {t('about-label')}
-              </span>
-              <h2 className="text-3xl sm:text-4xl font-bold font-[family-name:var(--font-display)] text-white leading-tight mt-2">
-                {t('about-title')}
-              </h2>
-            </div>
-
-            {/* Paragraphs */}
-            <p className="text-slate-400 text-sm font-mono leading-relaxed" dangerouslySetInnerHTML={{ __html: t('about-p1') }} />
-            <p className="text-slate-400 text-sm font-mono leading-relaxed" dangerouslySetInnerHTML={{ __html: t('about-p2') }} />
-
-            {/* Feature points */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-              {points.map(key => (
-                <div key={key} className="flex items-center gap-3 px-4 py-3 rounded-xl glass">
-                  <span className="w-6 h-6 rounded-full bg-cyan-500/10 flex items-center justify-center shrink-0">
-                    <i className="fa-solid fa-check text-[10px] text-cyan-400" />
-                  </span>
-                  <span className="text-sm text-slate-300">{t(key)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
         </div>
       </div>
-    </AnimatedSection>
+    </section>
   );
 }

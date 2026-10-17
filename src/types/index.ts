@@ -1,27 +1,20 @@
 export interface Project {
   id: string;
   title: string;
-  descKey: string;
-  altKey: string;
-  titleKey: string;
-  image: string;
+  /** i18n key prefix: `${key}-cat`, `${key}-desc` */
+  key: string;
+  image?: string;
   url: string;
   tags: string[];
+  /** Tint used by the typographic cover when no screenshot exists yet */
+  tint: string;
+  featured?: boolean;
 }
 
-export interface Skill {
-  icon: string;
-  titleKey: string;
-  descKey: string;
-  tags: string[];
-  accentTags?: string[];
-}
-
-export interface Service {
+export interface Discipline {
   number: string;
-  icon: string;
-  titleKey: string;
-  descKey: string;
+  key: string;
+  tags: string[];
 }
 
 export interface FAQItem {
@@ -31,7 +24,5 @@ export interface FAQItem {
 
 export interface Social {
   name: string;
-  icon: string;
   url: string;
-  label: string;
 }

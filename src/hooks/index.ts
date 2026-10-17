@@ -1,36 +1,75 @@
 import { useState, useEffect } from 'react';
+import Lenis from 'lenis';
 
 export function useTheme() {
-  const [theme, setTheme] = useState<'dark' | 'light'>(() =>
-    (localStorage.getItem('theme') as 'dark' | 'light') || 'dark'
-  );
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    try {
+      return (localStorage.getItem('theme') as 'dark' | 'light') || 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
 
   useEffect(() => {
     document.documentElement.classList.toggle('light-theme', theme === 'light');
-    localStorage.setItem('theme', theme);
+    try { localStorage.setItem('theme', theme); } catch { /* storage unavailable */ }
   }, [theme]);
 
   const toggle = () => setTheme(t => (t === 'dark' ? 'light' : 'dark'));
   return { theme, toggle };
 }
 
-export function useScrollSpy(ids: string[], offset = 120) {
-  const [active, setActive] = useState(ids[0]);
+/* ─── Smooth scroll (Lenis) ─── */
+let lenis: Lenis | null = null;
 
+export function useSmoothScroll(enabled: boolean) {
   useEffect(() => {
-    const onScroll = () => {
-      for (const id of [...ids].reverse()) {
-        const el = document.getElementById(id);
-        if (el && el.getBoundingClientRect().top <= offset) {
-          setActive(id);
-          return;
-        }
-      }
-      setActive(ids[0]);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, [ids, offset]);
+    if (!enabled || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    lenis = new Lenis({ duration: 1.2, easing: t => Math.min(1, 1.001 - Math.pow(2, -10 * t)) });
+    let raf = 0;
+    const loop = (time: number) => { lenis?.raf(time); raf = requestAnimationFrame(loop); };
+    raf = requestAnimationFrame(loop);
+    return () => { cancelAnimationFrame(raf); lenis?.destroy(); lenis = null; };
+  }, [enabled]);
+}
 
-  return active;
+export function scrollToTarget(target: string | number) {
+  if (lenis) {
+    lenis.scrollTo(target, { offset: 0, duration: 1.6 });
+    return;
+  }
+  if (typeof target === 'number') window.scrollTo({ top: target, behavior: 'smooth' });
+  else document.querySelector(target)?.scrollIntoView({ behavior: 'smooth' });
+}
+
+export function setScrollLocked(locked: boolean) {
+  if (lenis) {
+    if (locked) lenis.stop(); else lenis.start();
+  }
+  document.documentElement.style.overflow = locked ? 'hidden' : '';
+}
+
+/* ─── Local time in Porto-Novo ─── */
+export function useLocalTime() {
+  const [time, setTime] = useState('');
+  useEffect(() => {
+    const fmt = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Africa/Porto-Novo', hour: '2-digit', minute: '2-digit', hour12: false });
+    const update = () => setTime(fmt.format(new Date()));
+    update();
+    const id = setInterval(update, 15000);
+    return () => clearInterval(id);
+  }, []);
+  return time;
+}
+
+export function useIsFinePointer() {
+  const [fine, setFine] = useState(false);
+  useEffect(() => {
+    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
+    setFine(mq.matches);
+    const on = (e: MediaQueryListEvent) => setFine(e.matches);
+    mq.addEventListener('change', on);
+    return () => mq.removeEventListener('change', on);
+  }, []);
+  return fine;
 }

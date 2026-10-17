@@ -1,49 +1,44 @@
-import { useState, useEffect } from 'react';
-import { Navbar, Footer } from './components/layout';
+import { useEffect, useState } from 'react';
+import { motion, useScroll, useSpring } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
+import { Navbar, Footer, Preloader } from './components/layout';
 import { Hero } from './components/sections/Hero';
-import { About } from './components/sections/About';
-import { Skills, TechStack } from './components/sections/Skills';
+import { About, Marquee } from './components/sections/About';
 import { Projects } from './components/sections/Projects';
 import { Services } from './components/sections/Services';
 import { FAQ } from './components/sections/FAQ';
 import { Contact } from './components/sections/Contact';
-import { AuraBackground } from './components/ui';
+import { Cursor } from './components/ui';
+import { useIsFinePointer, useSmoothScroll } from './hooks';
 
 export default function App() {
-  const [scrollProgress, setScrollProgress] = useState(0);
+  const [ready, setReady] = useState(false);
+  const fine = useIsFinePointer();
+  const { i18n } = useTranslation();
+  const { scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30 });
 
-  useEffect(() => {
-    const onScroll = () => {
-      const total = document.documentElement.scrollHeight - window.innerHeight;
-      setScrollProgress(total > 0 ? (window.scrollY / total) * 100 : 0);
-    };
-    window.addEventListener('scroll', onScroll, { passive: true });
-    return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  useSmoothScroll(true);
+  useEffect(() => { document.documentElement.lang = i18n.language; }, [i18n.language]);
 
   return (
-    <div className="grid-bg min-h-screen flex flex-col relative">
-      {/* Dynamic Aura Gradient & Floating Orbs */}
-      <AuraBackground />
+    <>
+      <Preloader onDone={() => setReady(true)} />
+      {fine && <Cursor />}
+      <div className="grain" aria-hidden />
+      <motion.div className="fixed top-0 inset-x-0 h-[2px] bg-[var(--accent)] origin-left z-[60]" style={{ scaleX: progress }} />
 
-      {/* Scroll progress line */}
-      <div className="scroll-line" style={{ width: `${scrollProgress}%` }} />
-
-      <Navbar />
-
-      <main className="flex-1 max-w-6xl mx-auto w-full px-0 relative z-10">
-
-        <Hero />
+      <Navbar ready={ready} />
+      <main>
+        <Hero ready={ready} />
+        <Marquee />
         <About />
-        <Skills />
-        <TechStack />
         <Projects />
         <Services />
         <FAQ />
         <Contact />
       </main>
-
       <Footer />
-    </div>
+    </>
   );
 }

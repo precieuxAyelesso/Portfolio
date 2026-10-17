@@ -1,92 +1,112 @@
+import { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-import { Button } from '../ui';
+import { motion, useScroll, useTransform } from 'framer-motion';
+import { Arrow, EASE, Magnetic } from '../ui';
+import { scrollToTarget } from '../../hooks';
 
-export function Hero() {
+function Line({ children, delay, ready, className = '' }: {
+  children: React.ReactNode; delay: number; ready: boolean; className?: string;
+}) {
+  return (
+    <span className="mask-block">
+      <motion.span
+        className={`block ${className}`}
+        initial={{ y: '150%', rotate: 3 }}
+        animate={ready ? { y: '0%', rotate: 0 } : undefined}
+        transition={{ duration: 1.3, ease: EASE, delay }}
+      >
+        {children}
+      </motion.span>
+    </span>
+  );
+}
+
+export function Hero({ ready }: { ready: boolean }) {
   const { t } = useTranslation();
+  const ref = useRef<HTMLElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] });
+  const yText = useTransform(scrollYProgress, [0, 1], ['0%', '30%']);
+  const yImg = useTransform(scrollYProgress, [0, 1], ['0%', '-25%']);
+  const scaleImg = useTransform(scrollYProgress, [0, 1], [1, 1.15]);
+  const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0]);
 
   return (
-    <section id="hero" className="relative py-20 sm:py-28 overflow-hidden section-divider">
-      {/* Subtle glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[400px] bg-cyan-500/5 rounded-full blur-[120px] pointer-events-none" />
+    <section id="top" ref={ref} className="relative min-h-[100svh] flex flex-col pt-28 pb-8 overflow-hidden">
+      <div className="container-x flex-1 flex flex-col">
+        <motion.div
+          className="flex justify-between label"
+          initial={{ opacity: 0 }} animate={ready ? { opacity: 1 } : undefined} transition={{ duration: 1, delay: 0.1 }}
+        >
+          <span>{t('hero-kicker')}</span>
+          <span className="hidden sm:inline">(01)</span>
+        </motion.div>
 
-      <div className="max-w-6xl mx-auto px-5 relative z-10">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
-          {/* Left: Text */}
-          <motion.div initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}>
-            <p className="text-sm font-mono text-cyan-400 mb-4 tracking-wide">{t('hero-greeting')}</p>
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-[family-name:var(--font-display)] text-white leading-[1.1] mb-6">
-              {t('hero-title-expert')}{' '}
-              <span className="text-cyan-400">{t('hero-title-fields')}</span>
-            </h1>
-            <p className="text-slate-400 text-lg font-mono mb-2">{t('hero-desc')}</p>
-            <p className="text-slate-400 text-sm mb-8 leading-relaxed" dangerouslySetInnerHTML={{ __html: t('hero-specialization') }} />
+        <div className="relative flex-1 flex flex-col justify-center sm:flex-row sm:items-center">
+          <motion.h1 style={{ y: yText, opacity: fade }} className="display-xl relative z-10 py-10">
+            <Line ready={ready} delay={0.15}>{t('hero-line1')}</Line>
+            <Line ready={ready} delay={0.25} className="serif !font-normal !tracking-[-0.03em] pl-[8vw]">
+              {t('hero-line2')}
+            </Line>
+            <Line ready={ready} delay={0.35}>{t('hero-line3')}</Line>
+            <Line ready={ready} delay={0.45}>
+              {t('hero-line4')}
+              <motion.span
+                className="inline-block w-[0.22em] h-[0.22em] rounded-full bg-[var(--accent)] ml-[0.08em] align-baseline"
+                initial={{ scale: 0 }} animate={ready ? { scale: 1 } : undefined}
+                transition={{ type: 'spring', stiffness: 260, damping: 12, delay: 1.2 }}
+              />
+            </Line>
+          </motion.h1>
 
-            <div className="flex flex-wrap gap-3 mb-10">
-              <Button href="#services">
-                <i className="fa-solid fa-server text-xs" />
-                {t('hero-btn-services')}
-              </Button>
-              <Button href="#contact" variant="secondary">
-                {t('hero-btn-contact')}
-                <i className="fa-solid fa-arrow-right text-xs" />
-              </Button>
-            </div>
-
-            {/* Stats */}
-            <div className="flex gap-8">
-              {[{ val: '10+', key: 'hero-stat1' }, { val: '50+', key: 'hero-stat2' }, { val: '3', key: 'hero-stat3' }].map(s => (
-                <div key={s.key}>
-                  <div className="text-2xl font-bold font-[family-name:var(--font-display)] text-white">{s.val}</div>
-                  <div className="text-xs font-mono text-slate-500">{t(s.key)}</div>
-                </div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Right: Terminal */}
-          <motion.div initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.7, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}>
-            <div className="terminal shadow-2xl shadow-black/30">
-              <div className="terminal-bar">
-                <div className="terminal-dot bg-red-500/80" />
-                <div className="terminal-dot bg-yellow-500/80" />
-                <div className="terminal-dot bg-green-500/80" />
-                <span className="ml-2 text-[10px] text-slate-500 font-mono">précieux@portfolio</span>
-              </div>
-              <div className="terminal-body space-y-1">
-                <div><span className="t-prompt">$</span> <span className="t-cmd">whoami</span></div>
-                <div><span className="t-highlight">{t('term-whoami-highlight')}</span> {t('term-whoami-output1')}</div>
-                <div className="text-slate-500">{t('term-whoami-output2')} <span className="text-cyan-400">{t('term-whoami-output2-val')}</span></div>
-                <div className="text-slate-500">{t('term-whoami-output3')} <span className="text-emerald-400">{t('term-whoami-output3-val')}</span></div>
-                <div className="h-3" />
-                <div><span className="t-prompt">$</span> <span className="t-cmd">skills --list</span></div>
-                <div>{t('term-skills-output1')}</div>
-                <div>{t('term-skills-output2')}</div>
-                <div>{t('term-skills-output3')}</div>
-                <div>{t('term-skills-output4')}</div>
-                <div className="h-3" />
-                <div><span className="t-prompt">$</span> <span className="t-cmd">echo "ready"</span></div>
-                <div><span className="t-highlight">✓</span> <span className="text-slate-300">Ready to solve your IT problems.</span></div>
-                <div className="h-2" />
-                <div className="flex items-center gap-1"><span className="t-prompt">$</span> <span className="animate-pulse text-cyan-400">▌</span></div>
-              </div>
-            </div>
-
-            {/* Profile picture */}
-            <div className="mt-6 flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full overflow-hidden border-2 border-cyan-500/40">
-                <img src="/profil_1.jpg" alt="Précieux AYELESSO" className="w-full h-full object-cover" />
-              </div>
-              <div>
-                <p className="text-sm font-semibold text-white">Précieux AYELESSO</p>
-                <p className="text-xs font-mono text-slate-500">Porto-Novo, Bénin</p>
-              </div>
-              <span className="ml-auto px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-xs font-mono text-emerald-400">
-                {t('term-whoami-output3-val')}
-              </span>
-            </div>
+          {/* Portrait */}
+          <motion.div
+            style={{ y: yImg }}
+            className="order-first self-end mt-8 w-[38vw] sm:order-none sm:mt-0 sm:absolute sm:right-0 sm:top-1/2 sm:-translate-y-1/2 sm:w-[24vw] max-w-[380px] aspect-[3/4] overflow-hidden rounded-sm"
+            initial={{ clipPath: 'inset(100% 0 0 0)' }}
+            animate={ready ? { clipPath: 'inset(0% 0 0 0)' } : undefined}
+            transition={{ duration: 1.4, ease: [0.76, 0, 0.24, 1], delay: 0.5 }}
+          >
+            <motion.img
+              src="/profil_1.jpg" alt="Précieux Ayelesso"
+              style={{ scale: scaleImg }}
+              className="w-full h-full object-cover grayscale-[0.25]"
+            />
           </motion.div>
         </div>
+
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end border-t hairline pt-6"
+          initial={{ opacity: 0, y: 20 }} animate={ready ? { opacity: 1, y: 0 } : undefined}
+          transition={{ duration: 1, ease: EASE, delay: 0.9 }}
+        >
+          <p className="max-w-sm text-[var(--muted)] leading-relaxed">{t('hero-intro')}</p>
+
+          <div className="hidden md:flex justify-center items-center gap-3 label">
+            <span className="relative w-px h-10 bg-[var(--line)] overflow-hidden">
+              <motion.span
+                className="absolute inset-x-0 top-0 h-1/2 bg-[var(--fg)]"
+                animate={{ y: ['-100%', '200%'] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            </span>
+            {t('hero-scroll')}
+          </div>
+
+          <div className="flex md:justify-end">
+            <Magnetic strength={0.4}>
+              <a
+                href="#work"
+                onClick={e => { e.preventDefault(); scrollToTarget('#work'); }}
+                className="group relative flex items-center gap-3 rounded-full bg-[var(--fg)] text-[var(--bg)] pl-6 pr-2 py-2 overflow-hidden"
+              >
+                <span className="relative z-10 roll font-medium"><span>{t('hero-cta')}</span><span>{t('hero-cta')}</span></span>
+                <span className="relative z-10 w-10 h-10 rounded-full bg-[var(--accent)] text-[var(--accent-ink)] flex items-center justify-center transition-transform duration-500 group-hover:rotate-90">
+                  <Arrow className="w-4 h-4 rotate-90" />
+                </span>
+              </a>
+            </Magnetic>
+          </div>
+        </motion.div>
       </div>
     </section>
   );
