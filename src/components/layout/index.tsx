@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion, useMotionValueEvent, useScroll } from 'framer-motion';
-import { useTheme, useLocalTime, scrollToTarget, setScrollLocked } from '../../hooks';
+import { useTheme, scrollToTarget, setScrollLocked } from '../../hooks';
 import { socials, EMAIL } from '../../data';
 import { Arrow, EASE, Magnetic } from '../ui';
 
@@ -55,7 +55,7 @@ export function Preloader({ onDone }: { onDone: () => void }) {
           <div className="flex items-end justify-between gap-4">
             <div className="mask-block">
               <motion.p
-                initial={{ y: '150%' }} animate={{ y: 0 }} transition={{ duration: 1, ease: EASE, delay: 0.2 }}
+                initial={{ y: '150%' }} animate={{ y: '0%' }} transition={{ duration: 1, ease: EASE, delay: 0.2 }}
                 className="serif text-[clamp(2rem,6vw,5rem)] leading-none"
               >
                 Développeur & Réseaux
@@ -76,7 +76,6 @@ export function Preloader({ onDone }: { onDone: () => void }) {
 export function Navbar({ ready }: { ready: boolean }) {
   const { t, i18n } = useTranslation();
   const { theme, toggle: toggleTheme } = useTheme();
-  const time = useLocalTime();
   const [hidden, setHidden] = useState(false);
   const [open, setOpen] = useState(false);
   const { scrollY } = useScroll();
@@ -103,18 +102,10 @@ export function Navbar({ ready }: { ready: boolean }) {
         animate={{ y: ready && (!hidden || open) ? '0%' : '-100%' }}
         transition={{ duration: 0.8, ease: EASE }}
       >
-        <div className="container-x py-5 grid grid-cols-2 lg:grid-cols-3 items-center text-sm">
+        <div className="container-x py-5 flex items-center justify-between gap-6 text-sm">
           <a href="#top" onClick={e => go(e, 0)} className="group font-medium tracking-tight w-fit">
             <span className="roll"><span>Précieux Ayelesso©</span><span>Précieux Ayelesso©</span></span>
           </a>
-
-          <div className="hidden lg:flex items-center justify-center gap-2 label !text-[var(--fg)]">
-            <span className="relative flex h-1.5 w-1.5">
-              <span className="absolute inline-flex h-full w-full rounded-full bg-[var(--accent)] opacity-75 animate-ping" />
-              <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-[var(--accent)]" />
-            </span>
-            Porto-Novo {time}
-          </div>
 
           <div className="flex items-center justify-end gap-5">
             <nav className="hidden md:flex items-center gap-6">
@@ -156,7 +147,7 @@ export function Navbar({ ready }: { ready: boolean }) {
                     href={l.id}
                     onClick={e => { setOpen(false); go(e, l.id); }}
                     className="block text-[13vw] leading-[1.05] font-medium tracking-[-0.04em]"
-                    initial={{ y: '150%' }} animate={{ y: 0 }} exit={{ y: '150%' }}
+                    initial={{ y: '150%' }} animate={{ y: '0%' }} exit={{ y: '150%' }}
                     transition={{ duration: 0.8, ease: EASE, delay: 0.25 + i * 0.07 }}
                   >
                     {t(l.key)}
@@ -180,16 +171,11 @@ export function Navbar({ ready }: { ready: boolean }) {
 /* ─── Footer ─── */
 export function Footer() {
   const { t } = useTranslation();
-  const time = useLocalTime();
 
   return (
     <footer className="relative overflow-hidden pt-10">
       <div className="container-x">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 py-10 border-t hairline text-sm">
-          <div className="space-y-2">
-            <p className="label">{t('footer-local')}</p>
-            <p>Porto-Novo, BJ — {time}</p>
-          </div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 py-10 border-t hairline text-sm">
           <div className="space-y-2">
             <p className="label">Email</p>
             <a href={`mailto:${EMAIL}`} className="link-u">{EMAIL}</a>
@@ -202,7 +188,7 @@ export function Footer() {
               ))}
             </div>
           </div>
-          <div className="flex lg:justify-end items-start">
+          <div className="flex sm:justify-end items-start">
             <Magnetic>
               <button
                 onClick={() => scrollToTarget(0)}

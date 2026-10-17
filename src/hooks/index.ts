@@ -49,27 +49,16 @@ export function setScrollLocked(locked: boolean) {
   document.documentElement.style.overflow = locked ? 'hidden' : '';
 }
 
-/* ─── Local time in Porto-Novo ─── */
-export function useLocalTime() {
-  const [time, setTime] = useState('');
+export function useMediaQuery(query: string) {
+  const [match, setMatch] = useState(false);
   useEffect(() => {
-    const fmt = new Intl.DateTimeFormat('fr-FR', { timeZone: 'Africa/Porto-Novo', hour: '2-digit', minute: '2-digit', hour12: false });
-    const update = () => setTime(fmt.format(new Date()));
-    update();
-    const id = setInterval(update, 15000);
-    return () => clearInterval(id);
-  }, []);
-  return time;
-}
-
-export function useIsFinePointer() {
-  const [fine, setFine] = useState(false);
-  useEffect(() => {
-    const mq = window.matchMedia('(hover: hover) and (pointer: fine)');
-    setFine(mq.matches);
-    const on = (e: MediaQueryListEvent) => setFine(e.matches);
+    const mq = window.matchMedia(query);
+    setMatch(mq.matches);
+    const on = (e: MediaQueryListEvent) => setMatch(e.matches);
     mq.addEventListener('change', on);
     return () => mq.removeEventListener('change', on);
-  }, []);
-  return fine;
+  }, [query]);
+  return match;
 }
+
+export const useIsFinePointer = () => useMediaQuery('(hover: hover) and (pointer: fine)');

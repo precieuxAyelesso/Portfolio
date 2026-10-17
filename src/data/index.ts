@@ -101,6 +101,7 @@ export const socials: Social[] = [
 ];
 
 export const EMAIL = 'arimelprecieux@gmail.com';
+export const WHATSAPP = '2290149046574';
 
 export const techStack = [
   'HTML5', 'CSS3', 'JavaScript', 'TypeScript', 'React', 'Next.js', 'Node.js', 'Tailwind',

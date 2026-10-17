@@ -3,15 +3,17 @@ import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion, useMotionValue, useScroll, useSpring, useTransform, type MotionValue } from 'framer-motion';
 import { Arrow, EASE, FadeIn, LineDraw, ProjectCover, RevealText } from '../ui';
 import { projects } from '../../data';
-import { useIsFinePointer } from '../../hooks';
+import { useIsFinePointer, useMediaQuery } from '../../hooks';
 import type { Project } from '../../types';
 
 const isLive = (p: Project) => p.url.startsWith('http');
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/* ─── Featured: sticky cards that stack and recede ─── */
-function FeaturedCard({ project, index, total, progress }: {
-  project: Project; index: number; total: number; progress: MotionValue<number>;
+/* ─── Featured: sticky cards that stack and recede (compact, non-sticky on mobile) ─── */
+const pill = 'rounded-full bg-black/55 backdrop-blur-md text-white font-mono text-[0.65rem] sm:text-[0.7rem] tracking-[0.14em] uppercase px-3 py-1.5';
+
+function FeaturedCard({ project, index, total, progress, stacked }: {
+  project: Project; index: number; total: number; progress: MotionValue<number>; stacked: boolean;
 }) {
   const { t } = useTranslation();
   const ref = useRef<HTMLDivElement>(null);
@@ -23,39 +25,46 @@ function FeaturedCard({ project, index, total, progress }: {
   const Wrapper = live ? motion.a : motion.div;
 
   return (
-    <div ref={ref} className="h-[100svh] sticky top-0 flex items-center justify-center">
+    <div ref={ref} className={stacked ? 'h-[100svh] sticky top-0 flex items-center justify-center' : 'py-2'}>
       <Wrapper
-        {...(live ? { href: project.url, target: '_blank', rel: 'noopener noreferrer', 'data-cursor': t('work-visit') } : { 'data-cursor': t('work-soon') })}
-        style={{ scale, top: `calc(-4vh + ${index * 28}px)` }}
-        className="group relative block w-full h-[78svh] max-h-[820px] origin-top rounded-md overflow-hidden bg-[var(--bg-soft)] border hairline"
+        {...(live ? { href: project.url, target: '_blank', rel: 'noopener noreferrer' } : {})}
+        style={stacked ? { scale, top: `calc(-4vh + ${index * 28}px)` } : undefined}
+        className="group relative block w-full aspect-square sm:aspect-auto sm:h-[78svh] max-h-[820px] origin-top rounded-md overflow-hidden bg-[var(--bg-soft)] border hairline"
       >
         <motion.div style={{ scale: imgScale }} className="absolute inset-0">
           <div className="w-full h-full transition-transform duration-[1.4s] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04]">
             <ProjectCover project={project} />
           </div>
         </motion.div>
-        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/20 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-black/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
 
-        <div className="absolute inset-x-0 top-0 p-5 sm:p-8 flex justify-between text-white/80 label !text-white/80">
-          <span>({pad(index + 1)}) — {t('work-featured')}</span>
-          <span>{t(`${project.key}-cat`)}</span>
+        <div className="absolute inset-x-0 top-0 p-3 sm:p-8 flex justify-between items-start gap-2">
+          <span className={pill}>({pad(index + 1)}) <span className="hidden sm:inline">— {t('work-featured')}</span></span>
+          <span className={pill}>{t(`${project.key}-cat`)}</span>
         </div>
 
-        <div className="absolute inset-x-0 bottom-0 p-5 sm:p-8 text-white grid grid-cols-1 md:grid-cols-12 gap-4 items-end">
-          <h3 className="md:col-span-7 text-[clamp(2.4rem,7vw,6.5rem)] font-medium tracking-[-0.05em] leading-[0.9]">
-            {project.title}
-          </h3>
-          <div className="md:col-span-5 md:justify-self-end max-w-md space-y-4">
-            <p className="text-white/75 leading-relaxed">{t(`${project.key}-desc`)}</p>
-            <div className="flex flex-wrap items-center gap-2">
-              {project.tags.map(tag => (
-                <span key={tag} className="px-3 py-1 rounded-full border border-white/25 text-xs">{tag}</span>
-              ))}
-              <span className={`ml-auto flex items-center gap-2 text-sm rounded-full px-4 py-2 ${live ? 'bg-white text-black' : 'border border-white/30'}`}>
-                {live ? t('work-visit') : t('work-soon')}
-                {live && <Arrow diagonal className="w-4 h-4 transition-transform duration-500 group-hover:rotate-0" />}
+        <div className="absolute inset-x-0 bottom-0 p-4 sm:p-8 text-white grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4 items-end">
+          <div className="md:col-span-7 flex items-end justify-between gap-4">
+            <h3 className="text-[clamp(2rem,7vw,6.5rem)] font-medium tracking-[-0.05em] leading-[0.9]">{project.title}</h3>
+            {live && (
+              <span className="md:hidden shrink-0 w-11 h-11 rounded-full bg-white text-black flex items-center justify-center">
+                <Arrow diagonal className="w-4 h-4" />
               </span>
+            )}
+          </div>
+          <div className="md:col-span-5 md:justify-self-end max-w-md space-y-4">
+            <p className="hidden sm:block text-white/80 leading-relaxed">{t(`${project.key}-desc`)}</p>
+            <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
+              {project.tags.map(tag => (
+                <span key={tag} className="px-2.5 sm:px-3 py-1 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-[0.7rem] sm:text-xs">{tag}</span>
+              ))}
+              {live ? (
+                <span className="hidden md:flex ml-auto w-12 h-12 rounded-full bg-white text-black items-center justify-center">
+                  <Arrow diagonal className="w-5 h-5 transition-transform duration-500 group-hover:rotate-0" />
+                </span>
+              ) : (
+                <span className={`${pill} ml-auto`}>{t('work-soon')}</span>
+              )}
             </div>
           </div>
         </div>
@@ -66,12 +75,13 @@ function FeaturedCard({ project, index, total, progress }: {
 
 function Featured() {
   const featured = projects.filter(p => p.featured);
+  const stacked = useMediaQuery('(min-width: 640px)');
   const ref = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end end'] });
   return (
     <div ref={ref} className="container-x">
       {featured.map((p, i) => (
-        <FeaturedCard key={p.id} project={p} index={i} total={featured.length} progress={scrollYProgress} />
+        <FeaturedCard key={p.id} project={p} index={i} total={featured.length} progress={scrollYProgress} stacked={stacked} />
       ))}
     </div>
   );
@@ -105,7 +115,7 @@ function ProjectIndex() {
               <LineDraw delay={i * 0.05} />
               <Row
                 {...(live ? { href: p.url, target: '_blank', rel: 'noopener noreferrer', 'data-cursor': t('work-view') } : { 'data-cursor': t('work-soon') })}
-                className={`group grid grid-cols-12 items-center gap-4 py-6 sm:py-8 transition-opacity duration-500 ${active !== null && active !== i ? 'sm:opacity-30' : ''}`}
+                className={`group grid grid-cols-12 items-center gap-4 py-6 sm:py-8`}
               >
                 <span className="col-span-2 sm:col-span-1 label tabular-nums">{pad(i + 1)}</span>
                 <div className="col-span-7 sm:col-span-5 flex items-center gap-4">

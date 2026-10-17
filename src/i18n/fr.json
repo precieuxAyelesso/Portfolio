@@ -1,6 +1,5 @@
 {
   "loader-text": "Portfolio — Édition 2026",
-
   "nav-work": "Projets",
   "nav-about": "À propos",
   "nav-services": "Expertise",
@@ -8,7 +7,6 @@
   "nav-menu": "Menu",
   "nav-close": "Fermer",
   "nav-available": "Disponible pour missions",
-
   "hero-kicker": "Développeur web & administrateur réseaux",
   "hero-line1": "Je conçois des",
   "hero-line2": "expériences web",
@@ -17,20 +15,17 @@
   "hero-intro": "Basé à Porto-Novo, Bénin. Je construis des sites et applications rapides, propres, et j'installe les infrastructures qui les font tourner.",
   "hero-cta": "Voir les projets",
   "hero-scroll": "Défiler",
-
   "marquee-1": "Développement web",
   "marquee-2": "Réseaux",
   "marquee-3": "Linux",
   "marquee-4": "Maintenance",
   "marquee-5": "IA",
-
   "about-label": "(À propos)",
   "about-statement": "Étudiant en Informatique de Gestion, spécialisé en administration des réseaux. J'aime les choses simples qui marchent bien : un code lisible, un réseau stable, une interface qui respire. Chaque problème est un défi, et chaque projet une occasion de livrer quelque chose de durable.",
   "about-stat1": "Projets livrés",
   "about-stat2": "Problèmes résolus",
   "about-stat3": "Technologies",
   "about-caption": "Précieux Ayelesso — Porto-Novo",
-
   "work-label": "(Travaux sélectionnés)",
   "work-title-a": "Projets",
   "work-title-b": "récents",
@@ -39,7 +34,6 @@
   "work-view": "Voir",
   "work-visit": "Visiter le site",
   "work-soon": "Bientôt en ligne",
-
   "p-benin-cat": "Réservation & tourisme",
   "p-benin-desc": "Plateforme de réservation de villas, résidences et véhicules au Bénin, avec agenda culturel, météo en direct et espace hôte.",
   "p-sonorya-cat": "Plateforme musicale",
@@ -56,7 +50,6 @@
   "p-bidossessi-desc": "Site vitrine responsive pour une startup de services à Cotonou, optimisé SEO.",
   "p-chezelle-cat": "Site vitrine",
   "p-chezelle-desc": "Site vitrine pour une entreprise de restauration à Cotonou.",
-
   "services-label": "(Expertise)",
   "services-title-a": "Ce que je",
   "services-title-b": "fais",
@@ -69,9 +62,7 @@
   "d-sys-desc": "Installation et administration de serveurs Linux : services, permissions, scripts et automatisation.",
   "d-hw-title": "Maintenance & support",
   "d-hw-desc": "Diagnostic matériel, réparation, installation d'OS et de logiciels, formation à l'usage au quotidien.",
-
   "stack-label": "(Stack)",
-
   "faq-label": "(Questions)",
   "faq-title": "On me demande souvent",
   "faq-q1": "Proposez-vous des tarifs adaptés aux étudiants ?",
@@ -84,7 +75,6 @@
   "faq-a4": "Réseaux locaux (LAN), Wi-Fi sécurisé, serveurs Linux (Apache, routage) et simulations GNS3 avec matériel Cisco.",
   "faq-q5": "Comment se passe l'intervention ?",
   "faq-a5": "En présentiel à Porto-Novo pour le matériel. Entièrement à distance pour le web et l'administration Linux.",
-
   "contact-label": "(Contact)",
   "contact-title-a": "Travaillons",
   "contact-title-b": "ensemble",
@@ -104,12 +94,18 @@
   "contact-form-select-opt7": "Autre",
   "contact-form-desc": "Votre message",
   "contact-form-submit": "Envoyer",
-  "contact-sending": "Envoi…",
-  "toast-success": "Message envoyé — je reviens vers vous vite.",
-  "toast-error": "Échec de l'envoi. Écrivez-moi directement par email.",
-
-  "footer-local": "Heure locale",
   "footer-socials": "Réseaux",
   "footer-top": "Haut de page",
-  "footer-copy": "© 2026 Précieux Ayelesso. Conçu & développé avec soin."
+  "footer-copy": "© 2026 Précieux Ayelesso. Conçu & développé avec soin.",
+  "modal-title": "Comment souhaitez-vous l'envoyer ?",
+  "modal-desc": "Votre message est prêt. Choisissez le canal qui vous arrange, il s'ouvrira avec le texte déjà rempli.",
+  "modal-whatsapp": "Envoyer sur WhatsApp",
+  "modal-whatsapp-hint": "Réponse la plus rapide",
+  "modal-email": "Envoyer par email",
+  "modal-email-hint": "Via votre messagerie",
+  "modal-close": "Fermer",
+  "msg-hello": "Bonjour Précieux,",
+  "msg-from": "Je suis {{name}} ({{email}}).",
+  "msg-subject": "Sujet : {{subject}}",
+  "msg-mail-subject": "Portfolio — {{subject}}"
 }

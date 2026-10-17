@@ -1,6 +1,5 @@
 {
   "loader-text": "Portfolio — 2026 Edition",
-
   "nav-work": "Work",
   "nav-about": "About",
   "nav-services": "Expertise",
@@ -8,7 +7,6 @@
   "nav-menu": "Menu",
   "nav-close": "Close",
   "nav-available": "Available for work",
-
   "hero-kicker": "Web developer & network administrator",
   "hero-line1": "I design",
   "hero-line2": "web experiences",
@@ -17,20 +15,17 @@
   "hero-intro": "Based in Porto-Novo, Benin. I build fast, clean websites and apps, and set up the infrastructure that keeps them running.",
   "hero-cta": "See the work",
   "hero-scroll": "Scroll",
-
   "marquee-1": "Web development",
   "marquee-2": "Networks",
   "marquee-3": "Linux",
   "marquee-4": "Maintenance",
   "marquee-5": "AI",
-
   "about-label": "(About)",
   "about-statement": "Business IT student specialising in network administration. I like simple things that work well: readable code, a stable network, an interface that breathes. Every problem is a challenge, and every project a chance to ship something that lasts.",
   "about-stat1": "Projects shipped",
   "about-stat2": "Problems solved",
   "about-stat3": "Technologies",
   "about-caption": "Précieux Ayelesso — Porto-Novo",
-
   "work-label": "(Selected work)",
   "work-title-a": "Recent",
   "work-title-b": "projects",
@@ -39,7 +34,6 @@
   "work-view": "View",
   "work-visit": "Visit site",
   "work-soon": "Coming soon",
-
   "p-benin-cat": "Booking & tourism",
   "p-benin-desc": "Booking platform for villas, residences and vehicles in Benin, with a cultural calendar, live weather and a host space.",
   "p-sonorya-cat": "Music platform",
@@ -56,7 +50,6 @@
   "p-bidossessi-desc": "Responsive, SEO-optimised showcase site for a services startup in Cotonou.",
   "p-chezelle-cat": "Showcase site",
   "p-chezelle-desc": "Showcase site for a catering business in Cotonou.",
-
   "services-label": "(Expertise)",
   "services-title-a": "What I",
   "services-title-b": "do",
@@ -69,9 +62,7 @@
   "d-sys-desc": "Installing and running Linux servers: services, permissions, scripting and automation.",
   "d-hw-title": "Maintenance & support",
   "d-hw-desc": "Hardware diagnostics, repair, OS and software installs, and everyday training.",
-
   "stack-label": "(Stack)",
-
   "faq-label": "(Questions)",
   "faq-title": "Frequently asked",
   "faq-q1": "Do you offer student-friendly rates?",
@@ -84,7 +75,6 @@
   "faq-a4": "Local networks (LAN), secure Wi-Fi, Linux servers (Apache, routing) and GNS3 simulations with Cisco gear.",
   "faq-q5": "How does an intervention work?",
   "faq-a5": "On site in Porto-Novo for hardware. Fully remote for web and Linux administration.",
-
   "contact-label": "(Contact)",
   "contact-title-a": "Let's work",
   "contact-title-b": "together",
@@ -104,12 +94,18 @@
   "contact-form-select-opt7": "Other",
   "contact-form-desc": "Your message",
   "contact-form-submit": "Send",
-  "contact-sending": "Sending…",
-  "toast-success": "Message sent — I'll get back to you soon.",
-  "toast-error": "Sending failed. Email me directly instead.",
-
-  "footer-local": "Local time",
   "footer-socials": "Socials",
   "footer-top": "Back to top",
-  "footer-copy": "© 2026 Précieux Ayelesso. Designed & built with care."
+  "footer-copy": "© 2026 Précieux Ayelesso. Designed & built with care.",
+  "modal-title": "How would you like to send it?",
+  "modal-desc": "Your message is ready. Pick the channel that suits you; it opens with the text already filled in.",
+  "modal-whatsapp": "Send on WhatsApp",
+  "modal-whatsapp-hint": "Fastest reply",
+  "modal-email": "Send by email",
+  "modal-email-hint": "Through your mail app",
+  "modal-close": "Close",
+  "msg-hello": "Hi Précieux,",
+  "msg-from": "I'm {{name}} ({{email}}).",
+  "msg-subject": "Subject: {{subject}}",
+  "msg-mail-subject": "Portfolio — {{subject}}"
 }

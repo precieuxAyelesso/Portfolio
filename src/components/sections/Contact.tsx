@@ -1,35 +1,115 @@
-import { useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AnimatePresence, motion } from 'framer-motion';
-import emailjs from '@emailjs/browser';
 import { Arrow, EASE, FadeIn, Magnetic, RevealText } from '../ui';
-import { EMAIL, socials } from '../../data';
+import { EMAIL, WHATSAPP, socials } from '../../data';
+import { setScrollLocked } from '../../hooks';
+
+interface Draft { name: string; email: string; subject: string; message: string }
+
+/* ─── Modal: pick WhatsApp or email, both prefilled ─── */
+function SendModal({ draft, onClose, onSent }: { draft: Draft | null; onClose: () => void; onSent: () => void }) {
+  const { t } = useTranslation();
+  const closeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!draft) return;
+    setScrollLocked(true);
+    closeRef.current?.focus();
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => { setScrollLocked(false); window.removeEventListener('keydown', onKey); };
+  }, [draft, onClose]);
+
+  const body = draft ? [
+    t('msg-hello'),
+    t('msg-from', { name: draft.name, email: draft.email }),
+    t('msg-subject', { subject: draft.subject }),
+    '',
+    draft.message,
+  ].join('\n') : '';
+
+  const whatsappUrl = `https://wa.me/${WHATSAPP}?text=${encodeURIComponent(body)}`;
+  const mailUrl = draft
+    ? `mailto:${EMAIL}?subject=${encodeURIComponent(t('msg-mail-subject', { subject: draft.subject }))}&body=${encodeURIComponent(body)}`
+    : '';
+
+  return (
+    <AnimatePresence>
+      {draft && (
+        <motion.div
+          className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center p-3 sm:p-6"
+          initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+          transition={{ duration: 0.4 }}
+          role="dialog" aria-modal="true" aria-labelledby="send-modal-title"
+        >
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={onClose} />
+          <motion.div
+            className="relative w-full max-w-lg rounded-2xl bg-[var(--bg)] border hairline p-6 sm:p-8 shadow-2xl"
+            initial={{ y: 40, scale: 0.97 }} animate={{ y: 0, scale: 1 }} exit={{ y: 40, scale: 0.97 }}
+            transition={{ duration: 0.6, ease: EASE }}
+          >
+            <div className="flex items-start justify-between gap-6">
+              <h3 id="send-modal-title" className="text-2xl sm:text-3xl font-medium tracking-[-0.03em] leading-tight">
+                {t('modal-title')}
+              </h3>
+              <button ref={closeRef} onClick={onClose} aria-label={t('modal-close')} className="relative w-8 h-8 shrink-0 rounded-full border hairline hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-colors">
+                <span className="absolute top-1/2 left-1/2 w-3 h-px bg-current -translate-x-1/2 rotate-45" />
+                <span className="absolute top-1/2 left-1/2 w-3 h-px bg-current -translate-x-1/2 -rotate-45" />
+              </button>
+            </div>
+            <p className="mt-3 text-[var(--muted)] leading-relaxed">{t('modal-desc')}</p>
+
+            <div className="mt-5 rounded-xl bg-[var(--bg-soft)] p-4 text-sm leading-relaxed whitespace-pre-line max-h-40 overflow-auto text-[var(--muted)]">
+              {body}
+            </div>
+
+            <div className="mt-6 grid gap-3">
+              <a
+                href={whatsappUrl} target="_blank" rel="noopener noreferrer" onClick={onSent}
+                className="group flex items-center justify-between gap-4 rounded-xl bg-[#25D366] text-[#0b0b0c] px-5 py-4 transition-transform duration-500 hover:-translate-y-0.5"
+              >
+                <span>
+                  <span className="block font-medium text-lg">{t('modal-whatsapp')}</span>
+                  <span className="block text-sm opacity-70">{t('modal-whatsapp-hint')}</span>
+                </span>
+                <Arrow diagonal className="w-5 h-5 transition-transform duration-500 group-hover:rotate-0" />
+              </a>
+              <a
+                href={mailUrl} onClick={onSent}
+                className="group flex items-center justify-between gap-4 rounded-xl border hairline px-5 py-4 hover:bg-[var(--fg)] hover:text-[var(--bg)] transition-colors duration-500"
+              >
+                <span>
+                  <span className="block font-medium text-lg">{t('modal-email')}</span>
+                  <span className="block text-sm opacity-60">{t('modal-email-hint')}</span>
+                </span>
+                <Arrow diagonal className="w-5 h-5 transition-transform duration-500 group-hover:rotate-0" />
+              </a>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 export function Contact() {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
-  const [sending, setSending] = useState(false);
-  const [toast, setToast] = useState<'success' | 'error' | null>(null);
+  const [draft, setDraft] = useState<Draft | null>(null);
   const [copied, setCopied] = useState(false);
+  const closeModal = useCallback(() => setDraft(null), []);
+  const sent = useCallback(() => { formRef.current?.reset(); setDraft(null); }, []);
 
-  const flash = (kind: 'success' | 'error') => {
-    setToast(kind);
-    setTimeout(() => setToast(null), 3500);
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    if (!formRef.current || sending) return;
-    setSending(true);
-    try {
-      await emailjs.sendForm('service_d0l3hnh', 'template_k0qb11r', formRef.current, 'g3JcFTt3gGIuFuYHk');
-      formRef.current.reset();
-      flash('success');
-    } catch (err) {
-      console.error('EmailJS error:', err);
-      flash('error');
-    }
-    setSending(false);
+    const data = new FormData(e.currentTarget);
+    setDraft({
+      name: String(data.get('user_name') ?? '').trim(),
+      email: String(data.get('user_email') ?? '').trim(),
+      subject: String(data.get('problem_type') ?? ''),
+      message: String(data.get('message') ?? '').trim(),
+    });
   };
 
   const copyEmail = async () => {
@@ -113,12 +193,12 @@ export function Contact() {
               <div className="pt-10 flex justify-end">
                 <Magnetic strength={0.45}>
                   <button
-                    type="submit" disabled={sending}
-                    className="group relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-[var(--accent)] text-[var(--accent-ink)] flex flex-col items-center justify-center gap-2 font-medium text-lg overflow-hidden disabled:opacity-60"
+                    type="submit"
+                    className="group relative w-36 h-36 sm:w-44 sm:h-44 rounded-full bg-[var(--accent)] text-[var(--accent-ink)] flex flex-col items-center justify-center gap-2 font-medium text-lg overflow-hidden"
                   >
                     <span className="absolute inset-0 bg-[var(--fg)] rounded-full scale-0 group-hover:scale-100 transition-transform duration-700 ease-[cubic-bezier(0.16,1,0.3,1)]" />
                     <span className="relative z-10 transition-colors duration-500 group-hover:text-[var(--bg)]">
-                      {sending ? t('contact-sending') : t('contact-form-submit')}
+                      {t('contact-form-submit')}
                     </span>
                     <Arrow diagonal className="relative z-10 w-5 h-5 transition-all duration-500 group-hover:rotate-0 group-hover:text-[var(--bg)]" />
                   </button>
@@ -129,20 +209,7 @@ export function Contact() {
         </div>
       </div>
 
-      <AnimatePresence>
-        {toast && (
-          <motion.div
-            className="fixed bottom-6 left-1/2 z-[60] px-5 py-3 rounded-full bg-[var(--fg)] text-[var(--bg)] text-sm shadow-2xl"
-            initial={{ y: 40, x: '-50%', opacity: 0 }}
-            animate={{ y: 0, x: '-50%', opacity: 1 }}
-            exit={{ y: 40, x: '-50%', opacity: 0 }}
-            transition={{ duration: 0.6, ease: EASE }}
-            role="status"
-          >
-            {t(toast === 'success' ? 'toast-success' : 'toast-error')}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <SendModal draft={draft} onClose={closeModal} onSent={sent} />
     </section>
   );
 }
